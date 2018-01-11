@@ -1,0 +1,37 @@
+﻿{
+  "name": "InputOutput-AzureSQL-Stage-USSales",
+  "properties": {
+    "structure": [
+      {
+        "name": "ProductID",
+        "type": "String"
+      },
+      {
+        "name": "Date",
+        "type": "String"
+      },
+      {
+        "name": "Zip",
+        "type": "String"
+      },
+      {
+        "name": "Units",
+        "type": "String"
+      },
+      {
+        "name": "Revenue",
+        "type": "String"
+      }
+    ],
+    "type": "AzureSqlTable",
+    "linkedServiceName": "LinkedService-AzureSQL-DataMart",
+    "typeProperties": {
+      "tableName": "stage.US_sales"
+    },
+    "availability": {
+      "frequency": "Day",
+      "interval": 1 //,
+      //  "offset": "21:00:00"
+    }
+  }
+}

@@ -1,0 +1,16 @@
+﻿{
+  "name": "Output-AzureSQL-Summary-USSales",
+  "properties": {
+    "published": false,
+    "type": "AzureSqlTable",
+    "linkedServiceName": "LinkedService-AzureSQL-DataMart",
+    "typeProperties": {
+      "tableName": "dbo.US_Sales"
+    },
+    "availability": {
+      "frequency": "Day",
+      "interval": 1 //,
+      // "offset": "21:00:00"
+    }
+  }
+}

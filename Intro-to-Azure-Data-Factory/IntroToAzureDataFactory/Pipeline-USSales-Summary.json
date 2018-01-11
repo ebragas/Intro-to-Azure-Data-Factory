@@ -1,0 +1,80 @@
+﻿{
+  "name": "Pipeline-USSales-Summary",
+  "properties": {
+    "description": "Copy data from a Azure Blob to Azure SQL table",
+    "activities": [
+      // First activity
+      {
+        "name": "CopyFromBlobToSQL",
+        "type": "Copy",
+        "inputs": [
+          {
+            "name": "Input-AzureBlob-USSales" // First input
+          }
+        ],
+        "outputs": [
+          {
+            "name": "InputOutput-AzureSQL-Stage-USSales"
+          }
+        ],
+        "scheduler": {
+          "frequency": "Day",
+          "interval": 1
+          //"offset": "21:00:00"
+        },
+        "typeProperties": { // Properties specific to the type
+          "source": {
+            "type": "BlobSource" // eg. FileSystem
+          },
+          "sink": {
+            "type": "SqlSink", // eg. BlobSink
+            "sqlWriterCleanupScript": "$$Text.Format('truncate table stage.US_Sales', WindowStart, WindowEnd)",
+            "writeBatchSize": 10000,
+            "writeBatchTimeout": "60:00:00"
+          }
+        },
+        "Policy": { // Execution policy
+          "concurrency": 1,
+          "executionPriorityOrder": "NewestFirst",
+          "style": "StartOfInterval", // Execution w/in Activity Window
+          "retry": 0,
+          "timeout": "01:00:00"
+        }
+      }
+      // Second Activity
+      ,
+      {
+        "name": "ExecuteStoredProcedure",
+        "type": "SqlServerStoredProcedure",
+        "typeProperties": {
+          "storedProcedureName": "[dbo].[usp_Populate_US_Sales]",
+          "storedProcedureParameters": {
+            "SliceStart": "$$Text.Format('{0:yyyy-MM-dd HH:mm:ss}', SliceStart)",
+            "SliceEnd": "$$Text.Format('{0:yyyy-MM-dd HH:mm:ss}', SliceEnd)",
+            "WindowStart": "$$Text.Format('{0:yyyy-MM-dd HH:mm:ss}', WindowStart)",
+            "WindowEnd": "$$Text.Format('{0:yyyy-MM-dd HH:mm:ss}', WindowEnd)"
+          }
+        },
+        "inputs": [
+          {
+            "name": "InputOutput-AzureSQL-Stage-USSales"
+          }
+        ],
+        "outputs": [
+          {
+            "name": "Output-AzureSQL-Summary-USSales"
+          }
+        ],
+        "scheduler": {
+          "frequency": "Day",
+          "interval": 1
+          //"offset": "21:00:00"
+        }
+      }
+
+    ],
+    "start": "2018-01-09T00:00:00Z",
+    "end": "2018-01-12T00:00:00Z", // 2099-01-01T00:00:00Z
+    "isPaused": true
+  }
+}

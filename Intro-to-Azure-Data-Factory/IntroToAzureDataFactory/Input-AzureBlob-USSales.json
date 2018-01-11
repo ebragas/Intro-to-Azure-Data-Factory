@@ -1,0 +1,58 @@
+﻿{
+  "name": "Input-AzureBlob-USSales",
+  "properties": {
+    "structure": [ // Optional; file schema
+      {
+        "name": "ProductID",
+        "type": "String"
+      },
+      {
+        "name": "Date",
+        "type": "String"
+      },
+      {
+        "name": "Zip",
+        "type": "String"
+      },
+      {
+        "name": "Units",
+        "type": "String"
+      },
+      {
+        "name": "Revenue",
+        "type": "String"
+      }
+    ],
+    "type": "AzureBlob",
+    "linkedServiceName": "LinkedService-AzureBlob-USSales",
+    "typeProperties": {
+      "fileName": "US_sales.csv",
+      "folderPath": "us-sales/{slice}/",
+      "format": {
+        "type": "TextFormat",
+        "columnDelimiter": ",",
+        "firstRowAsHeader": true
+      },
+      "partitionedBy": [
+        {
+          "name": "slice",
+          "value": {
+            "type": "DateTime",
+            "date": "SliceStart",
+            "format": "yyyyMMdd"
+          }
+        }
+      ]
+      // ,"compression": {          // File compression type
+      //   "type": "ZipDeflate",
+      //   "level": "Optimal"       // Optimal or Fastest
+      // }
+    },
+    "external": true,
+    "availability": {
+      "frequency": "Day", // Hour, Day, Week, Month, Minute
+      "interval": 1 // Multiplier for frequency
+      // "offset": "21:00:00"
+    }
+  }
+}
